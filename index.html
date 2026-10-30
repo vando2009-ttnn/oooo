@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đồng hồ của tôi</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      font-family: system-ui, Arial, sans-serif; color: #f8fafc;
+      background: radial-gradient(circle at top, #243b63, #101827 65%);
+    }
+    main { text-align: center; padding: 28px; width: min(92vw, 520px); }
+    h1 { font-size: 1.15rem; font-weight: 500; letter-spacing: .12em; color: #cbd5e1; }
+    .clock {
+      width: min(70vw, 280px); aspect-ratio: 1; border: 8px solid #dbeafe;
+      border-radius: 50%; margin: 28px auto; position: relative;
+      background: radial-gradient(circle, #1e293b 0 4px, transparent 5px);
+      box-shadow: 0 0 35px #60a5fa33, inset 0 0 25px #0008;
+    }
+    .tick { position: absolute; width: 3px; height: 12px; background: #94a3b8;
+      left: 50%; top: 8px; transform-origin: 50% 128px; border-radius: 3px; }
+    .tick.major { height: 18px; width: 4px; background: #f8fafc; }
+    .hand { position: absolute; left: 50%; bottom: 50%; transform-origin: 50% 100%;
+      border-radius: 8px; transform: translateX(-50%) rotate(0deg); }
+    .hour { width: 7px; height: 27%; background: #f8fafc; }
+    .minute { width: 5px; height: 37%; background: #93c5fd; }
+    .second { width: 2px; height: 41%; background: #fb7185; }
+    .pin { position: absolute; width: 13px; height: 13px; border-radius: 50%;
+      background: #fb7185; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .digital { font-size: clamp(2.4rem, 10vw, 4rem); font-weight: 650; font-variant-numeric: tabular-nums; }
+    #date { color: #cbd5e1; margin-top: 8px; font-size: 1rem; }
+    .hint { color: #94a3b8; font-size: .85rem; margin-top: 26px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ĐỒNG HỒ</h1>
+    <div class="clock" aria-label="Đồng hồ kim">
+      <div id="ticks"></div>
+      <div class="hand hour" id="hour"></div>
+      <div class="hand minute" id="minute"></div>
+      <div class="hand second" id="second"></div>
+      <div class="pin"></div>
+    </div>
+    <div class="digital" id="digital">00:00:00</div>
+    <div id="date"></div>
+    <div class="hint">Thời gian được cập nhật tự động theo thiết bị của bạn.</div>
+  </main>
+  <script>
+    const ticks = document.getElementById('ticks');
+    for (let i = 0; i < 12; i++) {
+      const mark = document.createElement('div');
+      mark.className = 'tick' + (i % 3 === 0 ? ' major' : '');
+      mark.style.transform = `translateX(-50%) rotate(${i * 30}deg)`;
+      ticks.appendChild(mark);
+    }
+    const pad = n => String(n).padStart(2, '0');
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      document.getElementById('hour').style.transform =
+        `translateX(-50%) rotate(${(h % 12) * 30 + m * .5}deg)`;
+      document.getElementById('minute').style.transform =
+        `translateX(-50%) rotate(${m * 6 + s * .1}deg)`;
+      document.getElementById('second').style.transform =
+        `translateX(-50%) rotate(${s * 6}deg)`;
+      document.getElementById('digital').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+      document.getElementById('date').textContent =
+        new Intl.DateTimeFormat('vi-VN', { weekday: 'long', year: 'numeric',
+          month: 'long', day: 'numeric' }).format(now);
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
